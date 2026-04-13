@@ -1,0 +1,14 @@
+pipeline:
+  default_symbol: IBM
+  log_dir: data/logs
+  log_file: pipeline.log
+
+alpha_vantage:
+  base_url: https://www.alphavantage.co/query
+  function: TIME_SERIES_DAILY_ADJUSTED
+  outputsize: compact
+  timeout_seconds: 30
+
+database:
+  raw_table: stock_prices_raw
+  run_log_table: pipeline_run_log
