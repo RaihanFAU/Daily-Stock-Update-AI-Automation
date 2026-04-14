@@ -8,7 +8,7 @@ from config import load_config
 from extract import AlphaVantageExtractor
 from load import create_mysql_engine, insert_pipeline_run_log, upsert_stock_prices
 from logger import setup_logging
-from transform import transform_daily_adjusted
+from transform import transform_daily_prices
 
 
 def run() -> None:
@@ -23,8 +23,8 @@ def run() -> None:
     logger.info("Pipeline started for symbol=%s", symbol)
     try:
         extractor = AlphaVantageExtractor(config.alpha_vantage, logger)
-        payload = extractor.fetch_daily_adjusted(symbol)
-        transformed = transform_daily_adjusted(symbol, payload)
+        payload = extractor.fetch_daily_series(symbol)
+        transformed = transform_daily_prices(symbol, payload)
         rows_loaded = upsert_stock_prices(
             engine,
             transformed,

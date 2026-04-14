@@ -6,11 +6,16 @@ Python pipeline for extracting daily adjusted stock prices from Alpha Vantage an
 
 - Reads Alpha Vantage and MySQL credentials from `.env`.
 - Reads the default stock symbol and runtime settings from `config/config.yaml`.
-- Calls Alpha Vantage with `TIME_SERIES_DAILY_ADJUSTED`.
+- Calls Alpha Vantage with the free `TIME_SERIES_DAILY` endpoint.
 - Transforms the response into a clean tabular format with pandas.
 - Upserts rows into `stock_prices_raw` using unique key `(symbol, trade_date)`.
 - Writes each pipeline run status to `pipeline_run_log`.
 - Logs to both the console and `data/logs/pipeline.log`.
+
+Adjusted close, dividend, and split fields are kept in the table schema for a
+later switch to `TIME_SERIES_DAILY_ADJUSTED`. While using `TIME_SERIES_DAILY`,
+the pipeline stores `adjusted_close` as `close`, `dividend_amount` as `0`, and
+`split_coefficient` as `1`.
 
 ## Setup
 

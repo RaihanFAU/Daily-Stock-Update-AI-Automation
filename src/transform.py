@@ -11,8 +11,13 @@ import pandas as pd
 ALPHA_VANTAGE_DAILY_KEY = "Time Series (Daily)"
 
 
-def transform_daily_adjusted(symbol: str, payload: dict[str, Any]) -> pd.DataFrame:
-    """Normalize TIME_SERIES_DAILY_ADJUSTED data for MySQL loading."""
+def transform_daily_prices(symbol: str, payload: dict[str, Any]) -> pd.DataFrame:
+    """Normalize Alpha Vantage daily data for MySQL loading.
+
+    TIME_SERIES_DAILY does not include adjusted close, dividends, or split
+    coefficient. For that free endpoint, keep the schema stable by storing
+    adjusted_close as close, dividend_amount as 0, and split_coefficient as 1.
+    """
 
     time_series = payload.get(ALPHA_VANTAGE_DAILY_KEY)
     if not isinstance(time_series, dict) or not time_series:
@@ -29,10 +34,10 @@ def transform_daily_adjusted(symbol: str, payload: dict[str, Any]) -> pd.DataFra
                 "high": values.get("2. high"),
                 "low": values.get("3. low"),
                 "close": values.get("4. close"),
-                "adjusted_close": values.get("5. adjusted close"),
-                "volume": values.get("6. volume"),
-                "dividend_amount": values.get("7. dividend amount"),
-                "split_coefficient": values.get("8. split coefficient"),
+                "adjusted_close": values.get("5. adjusted close", values.get("4. close")),
+                "volume": values.get("6. volume", values.get("5. volume")),
+                "dividend_amount": values.get("7. dividend amount", 0),
+                "split_coefficient": values.get("8. split coefficient", 1),
                 "source_loaded_at": loaded_at,
             }
         )
@@ -54,3 +59,9 @@ def transform_daily_adjusted(symbol: str, payload: dict[str, Any]) -> pd.DataFra
 
     df["volume"] = pd.to_numeric(df["volume"], errors="raise").astype("int64")
     return df.sort_values(["symbol", "trade_date"]).reset_index(drop=True)
+
+
+def transform_daily_adjusted(symbol: str, payload: dict[str, Any]) -> pd.DataFrame:
+    """Backward-compatible wrapper for the original adjusted transform name."""
+
+    return transform_daily_prices(symbol, payload)

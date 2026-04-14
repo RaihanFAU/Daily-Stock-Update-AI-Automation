@@ -5,7 +5,7 @@ pipeline:
 
 alpha_vantage:
   base_url: https://www.alphavantage.co/query
-  function: TIME_SERIES_DAILY_ADJUSTED
+  function: TIME_SERIES_DAILY
   outputsize: compact
   timeout_seconds: 30
 

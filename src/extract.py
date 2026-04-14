@@ -11,13 +11,13 @@ from config import AlphaVantageConfig
 
 
 class AlphaVantageExtractor:
-    """Fetch daily adjusted time series data from Alpha Vantage."""
+    """Fetch daily time series data from Alpha Vantage."""
 
     def __init__(self, config: AlphaVantageConfig, logger: logging.Logger) -> None:
         self.config = config
         self.logger = logger
 
-    def fetch_daily_adjusted(self, symbol: str) -> dict[str, Any]:
+    def fetch_daily_series(self, symbol: str) -> dict[str, Any]:
         params = {
             "function": self.config.function,
             "symbol": symbol,
@@ -49,3 +49,8 @@ class AlphaVantageExtractor:
             raise RuntimeError("Alpha Vantage response is missing Time Series (Daily)")
 
         return payload
+
+    def fetch_daily_adjusted(self, symbol: str) -> dict[str, Any]:
+        """Backward-compatible wrapper for the original adjusted endpoint name."""
+
+        return self.fetch_daily_series(symbol)
