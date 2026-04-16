@@ -2,26 +2,24 @@ pipeline:
   default_symbol: IBM
   request_delay_seconds: 15
   symbols:
-    - NVDA
-    - GOOG
     - AAPL
-    - MSFT
     - AMZN
     - AVGO
-    - META
-    - TSLA
     - BRK-B
-    - WMT
+    - COST
+    - GOOG
+    - IBM
+    - JNJ
     - JPM
     - LLY
-    - XOM
-    - V
-    - JNJ
-    - MU
     - MA
-    - NFLX
-    - COST
-    - ORCL
+    - META
+    - MSFT
+    - NVDA
+    - TSLA
+    - V
+    - WMT
+    - XOM
   log_dir: data/logs
   log_file: pipeline.log
 

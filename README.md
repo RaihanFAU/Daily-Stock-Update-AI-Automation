@@ -50,7 +50,7 @@ python src/main.py
 
 The default symbol is configured in `config/config.yaml`.
 
-The current configuration fetches 20 large U.S.-listed companies by market cap.
+The current configuration fetches 18 large U.S.-listed companies.
 Each symbol is loaded independently and gets its own row in `pipeline_run_log`.
 The batch waits between Alpha Vantage requests using
 `pipeline.request_delay_seconds` to avoid free-plan pacing errors.
