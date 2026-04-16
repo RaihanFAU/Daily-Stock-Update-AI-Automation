@@ -42,6 +42,8 @@ class AlphaVantageConfig:
 @dataclass(frozen=True)
 class PipelineConfig:
     default_symbol: str
+    symbols: list[str]
+    request_delay_seconds: float
     log_dir: Path
     log_file: str
     raw_table: str
@@ -76,6 +78,23 @@ def _read_yaml(config_path: Path) -> dict:
     return loaded
 
 
+def _read_symbols(pipeline_config: dict) -> list[str]:
+    configured_symbols = pipeline_config.get("symbols")
+    if configured_symbols is None:
+        configured_symbols = [pipeline_config.get("default_symbol", "IBM")]
+
+    if not isinstance(configured_symbols, list) or not configured_symbols:
+        raise ValueError("pipeline.symbols must be a non-empty YAML list")
+
+    symbols = []
+    for symbol in configured_symbols:
+        symbol_text = str(symbol).strip().upper()
+        if not symbol_text:
+            raise ValueError("pipeline.symbols cannot contain blank values")
+        symbols.append(symbol_text)
+    return symbols
+
+
 def load_config(config_path: Path | None = None) -> AppConfig:
     """Load .env and YAML configuration into typed settings."""
 
@@ -105,6 +124,8 @@ def load_config(config_path: Path | None = None) -> AppConfig:
         ),
         pipeline=PipelineConfig(
             default_symbol=str(pipeline_config.get("default_symbol", "IBM")).upper(),
+            symbols=_read_symbols(pipeline_config),
+            request_delay_seconds=float(pipeline_config.get("request_delay_seconds", 15)),
             log_dir=PROJECT_ROOT / pipeline_config.get("log_dir", "logs"),
             log_file=pipeline_config.get("log_file", "daily_stock_pipeline.log"),
             raw_table=database_config.get("raw_table", "stock_prices_raw"),

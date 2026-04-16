@@ -5,7 +5,7 @@ Python pipeline for extracting daily adjusted stock prices from Alpha Vantage an
 ## What It Does
 
 - Reads Alpha Vantage and MySQL credentials from `.env`.
-- Reads the default stock symbol and runtime settings from `config/config.yaml`.
+- Reads the stock symbols and runtime settings from `config/config.yaml`.
 - Calls Alpha Vantage with the free `TIME_SERIES_DAILY` endpoint.
 - Transforms the response into a clean tabular format with pandas.
 - Upserts rows into `stock_prices_raw` using unique key `(symbol, trade_date)`.
@@ -49,3 +49,8 @@ python src/main.py
 ```
 
 The default symbol is configured in `config/config.yaml`.
+
+The current configuration fetches 20 large U.S.-listed companies by market cap.
+Each symbol is loaded independently and gets its own row in `pipeline_run_log`.
+The batch waits between Alpha Vantage requests using
+`pipeline.request_delay_seconds` to avoid free-plan pacing errors.
